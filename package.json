@@ -2,9 +2,10 @@
   "name": "serial-browser",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "build": "tsc",
+    "develop": "webpack-dev-server --mode development",
+    "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,5 +13,12 @@
   "license": "MIT",
   "dependencies": {
     "@types/w3c-web-serial": "^1.0.3"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^5.5.0",
+    "ts-loader": "^9.4.2",
+    "webpack": "^5.76.3",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.13.1"
   }
 }
