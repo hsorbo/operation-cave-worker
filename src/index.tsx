@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEventHandler, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { mnemo_import, can_import } from './mnemo';
 import { Buffer } from 'buffer';
@@ -7,6 +7,31 @@ import { dmpToByteArray, surveyListFromByteArray } from 'mnemo-dmp';
 
 import './scss/styles.scss'
 import 'bootstrap';
+
+
+const MyComponent = () => {
+  const ref = useRef<HTMLInputElement>(null)
+  const handleClick = () => {
+    ref!.current!.click()
+  }
+    
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileObj = e.target.files && e.target.files[0];
+    if (!fileObj) {
+      return;   
+    }
+      console.log(fileObj);        
+  }
+  return (
+    <>
+      <button className="btn btn-primary btn-block" onClick={handleClick}>Import from dmp-file</button>
+      <input ref={ref} type="file" accept=".dmp" style={{display: 'none'}} onChange={handleFileChange} />
+    </>
+  )
+}
+
+//export default MyComponent
+
 
 const importer = async () => {
     try {
@@ -27,73 +52,90 @@ const importer = async () => {
         alert(e);
     }
 }
+const Navbar = () => {
+    return (
+        <nav className="navbar navbar-expand-lg bg-body-tertiary">
+            <div className="container-fluid">
+                <a className="navbar-brand" href="#">Navbar</a>
+                <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li className="nav-item">
+                            <a className="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" href="#">Link</a>
+                        </li>
+                        <li className="nav-item dropdown">
+                            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Dropdown
+                            </a>
+                            <ul className="dropdown-menu">
+                                <li><a className="dropdown-item" href="#">Action</a></li>
+                                <li><a className="dropdown-item" href="#">Another action</a></li>
+                                <li>
+                                    <hr className="dropdown-divider" />
+                                </li>
+                                <li><a className="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link disabled">Disabled</a>
+                        </li>
+                    </ul>
+                    <form className="d-flex" role="search">
+                        <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                        <button className="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    );
+}
 
+const Demo = () => {
+    return (
+        <div className="btn-group">
+        <button type="button" className="btn btn-danger">Action</button>
+        <button type="button" className="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <span className="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul className="dropdown-menu">
+            <li><a className="dropdown-item" href="#">Action</a></li>
+            <li><a className="dropdown-item" href="#">Another action</a></li>
+            <li><a className="dropdown-item" href="#">Something else here</a></li>
+            <li>
+                <hr className="dropdown-divider" />
+            </li>
+            <li><a className="dropdown-item" href="#">Separated link</a></li>
+        </ul>
+    </div>
+    )
+}
 const App = () => {
     
     return (
-        <div>
-            <nav className="navbar navbar-expand-lg bg-body-tertiary">
-                <div className="container-fluid">
-                    <a className="navbar-brand" href="#">Navbar</a>
-
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" href="#">Home</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="#">Link</a>
-                            </li>
-                            <li className="nav-item dropdown">
-                                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                    Dropdown
-                                </a>
-                                <ul className="dropdown-menu">
-                                    <li><a className="dropdown-item" href="#">Action</a></li>
-                                    <li><a className="dropdown-item" href="#">Another action</a></li>
-                                    <li>
-                                        <hr className="dropdown-divider" />
-                                    </li>
-                                    <li><a className="dropdown-item" href="#">Something else here</a></li>
-                                </ul>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link disabled">Disabled</a>
-                            </li>
-                        </ul>
-                        <form className="d-flex" role="search">
-                            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                            <button className="btn btn-outline-success" type="submit">Search</button>
-                        </form>
+        <div className="min-vh-100 d-flex align-items-center justify-content-center">
+            {/* <Navbar /> */}
+            <div className="card text-center">
+                <div className="card-body">
+                    <h5 className="card-title">Import survey data</h5>
+                    <p className="card-text">Import data from dmp-file or MNemo if your browser supports it (Chrome)</p>
+                    <div className="d-grid gap-2 col-6 mx-auto">
+                        <a href="#" className="btn btn-primary btn-block" onClick={importer}>Import from MNemo</a>
+                        <MyComponent  />
                     </div>
                 </div>
-            </nav>
-            <button type="button" className="btn btn-secondary btn-lg btn-block">Block level button</button>
-            <button className="btn btn-primary btn-block btn-lg" onClick={importer}>Import</button>
-            <div className="btn-group">
-                <button type="button" className="btn btn-danger">Action</button>
-                <button type="button" className="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <span className="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul className="dropdown-menu">
-                    <li><a className="dropdown-item" href="#">Action</a></li>
-                    <li><a className="dropdown-item" href="#">Another action</a></li>
-                    <li><a className="dropdown-item" href="#">Something else here</a></li>
-                    <li>
-                        <hr className="dropdown-divider" />
-                    </li>
-                    <li><a className="dropdown-item" href="#">Separated link</a></li>
-                </ul>
             </div>
-            <textarea className="w-100 p-3" id="dump" cols={80} rows={25} wrap="hard"></textarea>
-            <textarea className="w-100 p-3" id="pung" cols={80} rows={25} wrap="hard"></textarea>
+            {/* <Demo /> */}
+            {/* <textarea className="w-100 p-3" id="dump" cols={80} rows={25} wrap="hard"></textarea>
+            <textarea className="w-100 p-3" id="pung" cols={80} rows={25} wrap="hard"></textarea> */}
         </div>
     );
 }
