@@ -1,3 +1,5 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import { mnemo_import, can_import } from './mnemo';
 import { Buffer } from 'buffer';
 global.window.Buffer = Buffer;
@@ -9,6 +11,20 @@ import './scss/styles.scss'
 import * as bootstrap from 'bootstrap'
 
 
+
+const App = () => (
+  <h1>Saataan!</h1>
+);
+
+const root = document.getElementById('root');
+
+if (root) {
+  createRoot(root).render(<App />);
+}
+
+
+
+//old stuff, cleanup later
 
 
 document.addEventListener('DOMContentLoaded', function () {
