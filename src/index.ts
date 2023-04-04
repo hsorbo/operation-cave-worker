@@ -1,10 +1,10 @@
 import { mnemo_import, can_import } from './mnemo';
-// Import our custom CSS
-import './scss/styles.scss'
 import { Buffer } from 'buffer';
 global.window.Buffer = Buffer;
-import { from_string } from 'mnemo-dmp';
+import { dmpToByteArray, surveyListFromByteArray } from 'mnemo-dmp';
 
+// Import our custom CSS
+import './scss/styles.scss'
 // Import all of Bootstrap's JS
 import * as bootstrap from 'bootstrap'
 
@@ -18,12 +18,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const pungA = document.getElementById("pung") as HTMLTextAreaElement || null;
     const pungB = document.querySelector('#pung');
 
+
     dmpB!.addEventListener('input', async () => {
         try {
-            pungA!.textContent = JSON.stringify(from_string(dmpA!.value));
+            const dmp = dmpA!.value;
+            const bytes = Uint8Array.from(dmp.split(',').map(x => parseInt(x, 10)));
+            pungA!.textContent = JSON.stringify(surveyListFromByteArray(bytes));
+            //pungA!.textContent = JSON.stringify(surveyListFromByteArray(dmpToByteArray(dmpA!.value)));
         }
-        catch(e) {
-            pungA!.textContent = "error";
+        catch (e) {
+            if (e instanceof Error) {
+                pungA!.textContent = e.message;
+            }
+            else {
+                pungA!.textContent = "error";
+            }
+
         }
     });
 
