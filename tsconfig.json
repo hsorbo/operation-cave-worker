@@ -11,5 +11,5 @@
       "sourceMap": true,
       "strictPropertyInitialization": false
     },
-    "include": ["src/index.tsx"]
+    "include": ["src/**/*.tsx"]
   }
