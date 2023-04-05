@@ -19,15 +19,13 @@ const MyComponent = () => {
         if (!file) {
             return;
         }
-        try
-        {
+        try {
             const buf = await file.arrayBuffer();
             const arr = dmpToByteArray(new TextDecoder().decode(buf));
             const imported = SurveyStorage.addImportData(ImportType.Dmp, Array.from(arr));
             navigate(`/dump/${imported.id}`);
         }
-        catch(e)
-        {
+        catch (e) {
             alert(e);
         }
     }
@@ -39,30 +37,36 @@ const MyComponent = () => {
     )
 }
 
-const importer = async () => {
-    try {
-        if (!can_import()) {
-            throw Error("Web serial not supported, use Kråom år Edj");
-        }
-        const survey_data = await mnemo_import(s => { console.log(s); });
-        var textbox = document.getElementById("dump") as HTMLTextAreaElement || null;
-        textbox!.value = survey_data.toString();
-    }
-    catch (e) {
-        if (e instanceof Error) {
-            //if (e instanceof NotFoundError) {
-            if (e.name === 'NotFoundError') {
-                return;
-            }
-        }
-        alert(e);
-    }
-}
+
 
 export const Import = () => {
+    const navigate = useNavigate();
+            
+    const importer = async () => {
+        try {
+            if (!can_import()) {
+                throw Error("Web serial not supported");
+            }
+            const survey_data = await mnemo_import(s => { console.log(s); });
+            if (survey_data.length === 0) {
+                throw Error("No data received");
+            }
+            const imported = SurveyStorage.addImportData(ImportType.Mnemo, Array.from(survey_data));
+            navigate(`/dump/${imported.id}`);
+        }
+        catch (e) {
+            if (e instanceof Error) {
+                //if (e instanceof NotFoundError) {
+                if (e.name === 'NotFoundError') {
+                    return;
+                }
+            }
+            alert(e);
+        }
+    }
+
     return (
         <div className="min-vh-100 d-flex align-items-center justify-content-center">
-            {/* <Navbar /> */}
             <div className="card text-center">
                 <div className="card-body">
                     <h5 className="card-title">Import survey data</h5>
@@ -73,9 +77,6 @@ export const Import = () => {
                     </div>
                 </div>
             </div>
-            {/* <Demo /> */}
-            {/* <textarea className="w-100 p-3" id="dump" cols={80} rows={25} wrap="hard"></textarea>
-            <textarea className="w-100 p-3" id="pung" cols={80} rows={25} wrap="hard"></textarea> */}
         </div>
     );
 }

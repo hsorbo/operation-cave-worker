@@ -24,7 +24,6 @@ export class SurveyStorage {
 
     public static addImportData(type: ImportType, data: Array<number>): Import {
         const imports = this.getImports();
-        console.log(imports);
         const newImport: Import = {
             id: imports.map(x => x.id).reduce((a, b) => Math.max(a, b), 0) + 1,
             date: new Date(),

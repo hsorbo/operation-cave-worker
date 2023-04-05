@@ -30,25 +30,36 @@ export function can_import() {
     return "serial" in navigator;
 }
 
-export async function mnemo_import(callback: (s:string) => void) {
-    const filters = [
-        { usbVendorId: 1240, usbProductId: 221 },
-    ];
+const mnemoV1HandShake = () => {
+    const date = new Date();
+    return new Uint8Array([
+        0x43,
+        date.getFullYear() - 2000,
+        date.getMonth() + 1,
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes()]);
+}
 
+const mnemoV2HandShake = () => {
+    return new TextEncoder().encode("getdata\n");
+}
+
+export async function mnemo_import(callback: (s: string) => void) {
+    const v1 = { usbVendorId: 1240, usbProductId: 221 };
+    const v2 = { usbVendorId: 0x2341, usbProductId: 0x005e }; //0x005e:0x2341 mnemo v2 Nano RP2040 Connect:
+    const filters = [v1, v2];
     const port = await navigator.serial.requestPort({ filters });
-
-    //const ports = await navigator.serial.getPorts();
-    //console.log(`Found ${ports.length} potential ports`);
-
-    // const mnemo_port = ports.find(port => {
-    //     console.log("banan");
-    //     const info = port.getInfo();
-    //     return info.usbProductId == 221 && info.usbVendorId == 1240;
-    //   });
+    // const ports = await navigator.serial.getPorts();
+    // ports.forEach(p => console.log(p.getInfo()));
+    // let port = ports.find(p => p.getInfo().usbProductId === v2.usbProductId || p.getInfo().usbProductId === v1.usbProductId);
 
     if (port === undefined) {
         throw Error("mnemo not found");
     }
+    
+    const isV2 = port.getInfo().usbProductId === v2.usbProductId;
+    
     await port.open({
         baudRate: 9600,
         dataBits: 8,
@@ -57,15 +68,6 @@ export async function mnemo_import(callback: (s:string) => void) {
         bufferSize: 8192
     });
 
-    const date = new Date();
-    const data = new Uint8Array([
-        0x43,
-        date.getFullYear() - 2000,
-        date.getMonth() + 1,
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes()]);
-
     callback("writing");
 
     if (port.writable === null) {
@@ -73,6 +75,9 @@ export async function mnemo_import(callback: (s:string) => void) {
     }
 
     const writer = port.writable.getWriter();
+    
+    const data = isV2 ? mnemoV2HandShake():  mnemoV1HandShake();
+
     for (const x of data) {
         await writer.write(new Uint8Array([x]));
         await sleep(100);
@@ -114,5 +119,6 @@ export async function mnemo_import(callback: (s:string) => void) {
     callback("done reading");
 
     reader.releaseLock();
+    port.close();
     return concat(chunks);
 }
