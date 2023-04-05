@@ -3,8 +3,8 @@ import { useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 
 import { mnemo_import, can_import } from '../mnemo';
-import { dmpToByteArray, surveyListFromByteArray } from 'mnemo-dmp';
-
+import { dmpToByteArray } from 'mnemo-dmp';
+import { ImportType, SurveyStorage } from '../common';
 
 const MyComponent = () => {
     const ref = useRef<HTMLInputElement>(null)
@@ -23,12 +23,12 @@ const MyComponent = () => {
         {
             const buf = await file.arrayBuffer();
             const arr = dmpToByteArray(new TextDecoder().decode(buf));
-            window.localStorage.setItem(`raw_import_id_1`, JSON.stringify(Array.from(arr)));
-            navigate('/dump/1');
+            const imported = SurveyStorage.addImportData(ImportType.Dmp, Array.from(arr));
+            navigate(`/dump/${imported.id}`);
         }
-        catch
+        catch(e)
         {
-            alert("Error");
+            alert(e);
         }
     }
     return (
