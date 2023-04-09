@@ -45,21 +45,35 @@ const mnemoV2HandShake = () => {
     return new TextEncoder().encode("getdata\n");
 }
 
-export async function mnemo_import(callback: (s: string) => void) {
+enum ImportProgress {
+    Opening,
+    Opened,
+    Communicating,
+    Reading,
+}
+
+export async function mnemo_import(callback: (s: ImportProgress) => void) {
     const v1 = { usbVendorId: 1240, usbProductId: 221 };
     const v2 = { usbVendorId: 0x2341, usbProductId: 0x005e }; //0x005e:0x2341 mnemo v2 Nano RP2040 Connect:
     const filters = [v1, v2];
+    
+    if (!can_import()) {
+        throw Error("Web serial not supported");
+    }
+
     const port = await navigator.serial.requestPort({ filters });
     // const ports = await navigator.serial.getPorts();
     // ports.forEach(p => console.log(p.getInfo()));
     // let port = ports.find(p => p.getInfo().usbProductId === v2.usbProductId || p.getInfo().usbProductId === v1.usbProductId);
 
     if (port === undefined) {
-        throw Error("mnemo not found");
+        throw Error("Mnemo not found");
     }
     
     const isV2 = port.getInfo().usbProductId === v2.usbProductId;
     
+    callback(ImportProgress.Opening);
+
     await port.open({
         baudRate: 9600,
         dataBits: 8,
@@ -68,7 +82,7 @@ export async function mnemo_import(callback: (s: string) => void) {
         bufferSize: 8192
     });
 
-    callback("writing");
+    callback(ImportProgress.Communicating);
 
     if (port.writable === null) {
         throw Error("Can't write to port");
@@ -84,7 +98,7 @@ export async function mnemo_import(callback: (s: string) => void) {
     }
     writer.releaseLock();
 
-    callback("reading...");
+    callback(ImportProgress.Reading);
     if (port.readable === null) {
         throw Error("Can't read from port");
     }
@@ -107,7 +121,7 @@ export async function mnemo_import(callback: (s: string) => void) {
             if (done) {
                 break;
             }
-            callback(`read ${read} bytes`)
+            //callback(`read ${read} bytes`)
         }
         catch {
             //TODO: Dirty to assume done here....
@@ -116,7 +130,6 @@ export async function mnemo_import(callback: (s: string) => void) {
 
         await sleep(100);
     }
-    callback("done reading");
 
     reader.releaseLock();
     port.close();

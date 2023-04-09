@@ -6,7 +6,7 @@ import { mnemo_import, can_import } from '../mnemo';
 import { dmpToByteArray } from 'mnemo-dmp';
 import { ImportType, SurveyStorage } from '../common';
 
-const MyComponent = () => {
+const FileImport = () => {
     const ref = useRef<HTMLInputElement>(null)
     const navigate = useNavigate();
 
@@ -44,9 +44,6 @@ export const Import = () => {
             
     const importer = async () => {
         try {
-            if (!can_import()) {
-                throw Error("Web serial not supported");
-            }
             const survey_data = await mnemo_import(s => { console.log(s); });
             if (survey_data.length === 0) {
                 throw Error("No data received");
@@ -72,8 +69,8 @@ export const Import = () => {
                     <h5 className="card-title">Import survey data</h5>
                     <p className="card-text">Import data from dmp-file or MNemo if your browser supports it (Chrome)</p>
                     <div className="d-grid gap-2 col-6 mx-auto">
-                        <a href="#" className="btn btn-primary btn-block" onClick={importer}>Import from MNemo</a>
-                        <MyComponent />
+                        <a href="#" hidden={!can_import()} className="btn btn-primary btn-block" onClick={importer}>Import from MNemo</a>
+                        <FileImport />
                     </div>
                 </div>
             </div>
