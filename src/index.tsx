@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Buffer } from 'buffer';
 global.window.Buffer = Buffer;
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Link, Route, Routes } from 'react-router-dom';
 
 import './scss/styles.scss'
 import 'bootstrap';
@@ -32,9 +32,9 @@ const root = document.getElementById('root');
 if (root) {
     createRoot(root).render(
         <React.StrictMode>
-            <BrowserRouter>
+            <HashRouter>
                 <App />
-            </BrowserRouter>
+            </HashRouter>
         </React.StrictMode>
     );
 }
