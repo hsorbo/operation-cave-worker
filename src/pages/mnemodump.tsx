@@ -67,27 +67,34 @@ export const MnemoDump = () => {
         return (<h1>Dump {id} not found</h1>)
     }
     else {
-        const surveyList = surveyListFromByteArray(Uint8Array.from(imp.data));
-        const selectedSurvey = surveyList[Number(surveyNumber)];
-        return (
-            <div className="text-center">
-                <h1>Import #{id}</h1>
-                <text>Imported {imp.date.toString()}</text>
-                <br/>
-                <button className="btn btn-primary btn-block btn-sm justify-content-center" onClick={() => downloadDmp(id)}>Download as dmp</button>
-                
-                {
-                    surveyList.length === 0 ? <h2>No surveys found</h2>
-                        : <>
-                <nav className="nav nav-tabs justify-content-center">
-                    {surveyList.map((survey, i) => (
-                        <Link className="nav-link" aria-current="page" to={"/dump/" + id + "/" + i}>BAS{i}</Link>),)}
-                </nav>
-                {RenderSurvey(selectedSurvey)}
-                        </>
-                }
+        try {
+            const surveyList = surveyListFromByteArray(Uint8Array.from(imp.data));
+            const selectedSurvey = surveyList[Number(surveyNumber)];
+            return (
+                <div className="text-center">
+                    <h1>Import #{id}</h1>
+                    <text>Imported {imp.date.toString()}</text>
+                    <br/>
+                    <button className="btn btn-primary btn-block btn-sm justify-content-center" onClick={() => downloadDmp(id)}>Download as dmp</button>
+                    
+                    {
+                        surveyList.length === 0 ? <h2>No surveys found</h2>
+                            : <>
+                    <nav className="nav nav-tabs justify-content-center">
+                        {surveyList.map((survey, i) => (
+                            <Link className="nav-link" aria-current="page" to={"/dump/" + id + "/" + i}>BAS{i}</Link>),)}
+                    </nav>
+                    {RenderSurvey(selectedSurvey)}
+                            </>
+                    }
+    
+                </div >
+            )
+        }
+        catch (e) {
+            return (<h1>Dump {id} is not a valid dmp file</h1>)
+        }
 
-            </div >
-        )
+       
     }
 }
