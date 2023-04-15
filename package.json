@@ -11,6 +11,7 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "homepage": "/",
   "dependencies": {
     "@popperjs/core": "^2.11.7",
     "@types/w3c-web-serial": "^1.0.3",

@@ -25,7 +25,7 @@ export const Navbar = () => {
                             <ul className="dropdown-menu">
                                 {SurveyStorage.getImports().map(x => (
                                     <li>
-                                        <Link className="dropdown-item" to={'/dump/' + x.id}>{x.date.toString()}</Link>
+                                        <Link className="dropdown-item" to={'/dump/' + x.id + "/0"}>{x.date.toString()}</Link>
                                     </li>
                                 ))}
                             </ul>

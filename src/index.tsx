@@ -21,7 +21,7 @@ export const App = () => {
                 <Route path="/" element={<Import />} />
                 <Route path="/books" element={<h1>kake</h1>} />
                 <Route path="/about" element={<About />} />
-                <Route path="/dump/:id" element={<MnemoDump />} />
+                <Route path="/dump/:id/:surveyNumber" element={<MnemoDump />} />
             </Routes>
         </div>
     );
