@@ -9,12 +9,22 @@ export interface Import {
     data: Array<number>;
 }
 
-
 export class SurveyStorage {
     public static getImports(): Array<Import> {
         const s = window.localStorage.getItem(`RAW_IMPORTS`);
         return s === null ? [] : JSON.parse(s);
     }
+
+    public static getComment(surveyId: number, stationId:number): string {
+        const s = JSON.parse(window.localStorage.getItem(`COMMENTS`) ?? "{}");
+        return s["0"]?.[`${surveyId}`]?.[`${stationId}`] ?? "lorem ipsum";
+    }
+    public static setComment(surveyId: number, stationId:number, comment:string) {
+        const s = JSON.parse(window.localStorage.getItem(`COMMENTS`) ?? "{}");
+        s["0"][`${surveyId}`][`${stationId}`] = comment;
+        window.localStorage.setItem(`COMMENTS`, JSON.stringify(s));
+    }
+
 
 
     public static addImport(imp: Import): void {
