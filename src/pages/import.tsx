@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 import { mnemo_import, can_import } from '../mnemo';
 import { dmpToByteArray } from 'mnemo-dmp';
-import { ImportType, SurveyStorage } from '../common';
+import { Import, ImportType, SurveyStorage } from '../common';
 
-const FileImport = () => {
+const FileImport = ({setImport}: {setImport:React.Dispatch<React.SetStateAction<Import[]>>}) => {
     const ref = useRef<HTMLInputElement>(null)
     const navigate = useNavigate();
 
@@ -23,7 +23,8 @@ const FileImport = () => {
             const buf = await file.arrayBuffer();
             const arr = dmpToByteArray(new TextDecoder().decode(buf));
             const imported = SurveyStorage.addImportData(ImportType.Dmp, Array.from(arr));
-            navigate(`/dump/${imported.id}`);
+            setImport(SurveyStorage.getImports());
+            navigate(`/dump/${imported.id}/0`);
         }
         catch (e) {
             alert(e);
@@ -39,7 +40,7 @@ const FileImport = () => {
 
 
 
-export const Import = () => {
+export const DoImport = ({setImport}: {setImport:React.Dispatch<React.SetStateAction<Import[]>>}) => {
     const navigate = useNavigate();
             
     const importer = async () => {
@@ -49,7 +50,8 @@ export const Import = () => {
                 throw Error("No data received");
             }
             const imported = SurveyStorage.addImportData(ImportType.Mnemo, Array.from(survey_data));
-            navigate(`/dump/${imported.id}`);
+            setImport(SurveyStorage.getImports());
+            navigate(`/dump/${imported.id}/0`);
         }
         catch (e) {
             if (e instanceof Error) {
@@ -70,7 +72,7 @@ export const Import = () => {
                     <p className="card-text">Import data from dmp-file or MNemo if your browser supports it (Chrome)</p>
                     <div className="d-grid gap-2 col-6 mx-auto">
                         <a href="#" hidden={!can_import()} className="btn btn-primary btn-block" onClick={importer}>Import from MNemo</a>
-                        <FileImport />
+                        <FileImport setImport={setImport} />
                     </div>
                 </div>
             </div>

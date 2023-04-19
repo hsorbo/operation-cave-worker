@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { SurveyStorage } from "../common";
+import { Import } from "../common";
 
-export const Navbar = () => {
+export const Navbar = ({imports}: {imports:Import[]})   => {
     return (
         <nav className="navbar navbar-expand-lg bg-body-tertiary">
             <div className="container-fluid">
@@ -23,8 +23,8 @@ export const Navbar = () => {
                                 Imports
                             </a>
                             <ul className="dropdown-menu">
-                                {SurveyStorage.getImports().map(x => (
-                                    <li>
+                                {imports.map(x => (
+                                    <li key={x.id}>
                                         <Link className="dropdown-item" to={'/dump/' + x.id + "/0"}>{x.date.toString()}</Link>
                                     </li>
                                 ))}
