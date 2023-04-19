@@ -6,6 +6,7 @@
   "scripts": {
     "develop": "webpack-dev-server --mode development",
     "build": "webpack --mode production",
+    "clean": "rm -f dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,6 +18,7 @@
     "@types/w3c-web-serial": "^1.0.3",
     "bootstrap": "^5.3.0-alpha2",
     "buffer": "^6.0.3",
+    "copy-webpack-plugin": "^11.0.0",
     "mnemo-dmp": "^0.3.0",
     "react-router-dom": "^6.10.0"
   },
