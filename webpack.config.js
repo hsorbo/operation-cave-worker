@@ -50,6 +50,9 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
-        new CopyPlugin([{ from: 'public' }])
+        new CopyPlugin({
+            patterns: [{ from: "public" }]
+        })
     ]
 };
+
