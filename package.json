@@ -6,6 +6,8 @@
   "scripts": {
     "develop": "webpack-dev-server --mode development",
     "build": "webpack --mode production",
+    "publish": "rsync -avz --delete-before dist/* $npm_config_deploy_path",
+    "deploy": "npm run build && npm run publish",
     "clean": "rm -f dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
