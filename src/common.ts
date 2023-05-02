@@ -9,39 +9,73 @@ export interface Import {
     data: Array<number>;
 }
 
+export interface SurveyComments {
+    importId: number;
+    surveyId: number;
+    comments: string[];
+}
+interface Storage {
+    imports: Array<Import>;
+    comments: Array<SurveyComments>;
+}
+
 export class SurveyStorage {
+    static zero(): Storage {
+        return { imports: [], comments: [] };
+    }
+
+    static read(): Storage {
+        const s = window.localStorage.getItem(`STORAGE`);
+        return s === null ? this.zero() : JSON.parse(s);
+    }
+    static write(storage: Storage) {
+        window.localStorage.setItem(`STORAGE`, JSON.stringify(storage));
+    }
+
     public static getImports(): Array<Import> {
-        const s = window.localStorage.getItem(`RAW_IMPORTS`);
-        return s === null ? [] : JSON.parse(s);
+        return this.read().imports;
     }
-
-    public static getComment(surveyId: number, stationId:number): string {
-        const s = JSON.parse(window.localStorage.getItem(`COMMENTS`) ?? "{}");
-        return s["0"]?.[`${surveyId}`]?.[`${stationId}`] ?? "lorem ipsum";
-    }
-    public static setComment(surveyId: number, stationId:number, comment:string) {
-        const s = JSON.parse(window.localStorage.getItem(`COMMENTS`) ?? "{}");
-        s["0"][`${surveyId}`][`${stationId}`] = comment;
-        window.localStorage.setItem(`COMMENTS`, JSON.stringify(s));
-    }
-
-
 
     public static addImport(imp: Import): void {
-        const updated = this.getImports().push(imp);
-        window.localStorage.setItem(`RAW_IMPORTS`, JSON.stringify(updated));
+        const storage = this.read();
+        storage.imports.push(imp);
+        this.write(storage);
     }
 
     public static addImportData(type: ImportType, data: Array<number>): Import {
-        const imports = this.getImports();
+        const storage = this.read();
         const newImport: Import = {
-            id: imports.map(x => x.id).reduce((a, b) => Math.max(a, b), 0) + 1,
+            id: storage.imports.map(x => x.id).reduce((a, b) => Math.max(a, b), 0) + 1,
             date: new Date(),
             type,
             data,
         }
-        imports.push(newImport);
-        window.localStorage.setItem(`RAW_IMPORTS`, JSON.stringify(imports));
+        storage.imports.push(newImport);
+        this.write(storage);
         return newImport;
+    }
+
+    
+    static filterComments(comments: SurveyComments[], importId: number, surveyId: number) {
+        return comments
+            .filter(x => x.importId === importId)
+            .filter(x => x.surveyId === surveyId)
+            .flatMap(x => x.comments)
+    }
+
+    public static getComments(importId: number, surveyId: number) {
+        const storage = this.read();
+        return this.filterComments(storage.comments, importId, surveyId);
+    }
+
+    public static setComments(importId: number, surveyId: number, comments: string[]) {
+        console.log(`setComments importId=${importId} surveyId=${surveyId} comments=${comments}`);
+        const storage = this.read();
+        
+        console.log(storage.comments);
+        storage.comments = storage.comments.filter(x => !(x.importId === importId && x.surveyId === surveyId));
+        console.log(storage.comments);
+        storage.comments.push({ importId, surveyId, comments });
+        this.write(storage);
     }
 }

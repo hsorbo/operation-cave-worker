@@ -20,7 +20,7 @@ export const App = () => {
             <Routes>
                 <Route path="/" element={<DoImport setImport={setImport} />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/dump/:id/:surveyNumber" element={<MnemoDump />} />
+                <Route path="/dump/:id/:surveyNumber" element={<MnemoDump imports={imports} />} />
             </Routes>
         </div>
     );
