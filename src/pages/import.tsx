@@ -6,14 +6,13 @@ import { mnemo_import, can_import } from '../mnemo';
 import { dmpToByteArray } from 'mnemo-dmp';
 import { Import, ImportType, SurveyStorage } from '../common';
 
-const FileImport = ({setImport}: {setImport:React.Dispatch<React.SetStateAction<Import[]>>}) => {
+const FileImport = ({ setImport }: { setImport: React.Dispatch<React.SetStateAction<Import[]>> }) => {
     const ref = useRef<HTMLInputElement>(null)
     const navigate = useNavigate();
 
     const handleClick = () => {
         ref!.current!.click()
     }
-
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files && e.target.files[0];
         if (!file) {
@@ -22,9 +21,10 @@ const FileImport = ({setImport}: {setImport:React.Dispatch<React.SetStateAction<
         try {
             const buf = await file.arrayBuffer();
             const arr = dmpToByteArray(new TextDecoder().decode(buf));
-            const imported = SurveyStorage.addImportData(ImportType.Dmp, Array.from(arr));
+            const comment = `Imported from file ${file.name}`;
+            const imported = SurveyStorage.addImportData(ImportType.Dmp, comment, Array.from(arr));
             setImport(SurveyStorage.getImports());
-            navigate(`/dump/${imported.id}/0`);
+            navigate(`/imported/${imported.id}`);
         }
         catch (e) {
             alert(e);
@@ -40,18 +40,19 @@ const FileImport = ({setImport}: {setImport:React.Dispatch<React.SetStateAction<
 
 
 
-export const DoImport = ({setImport}: {setImport:React.Dispatch<React.SetStateAction<Import[]>>}) => {
+export const DoImport = ({ setImport }: { setImport: React.Dispatch<React.SetStateAction<Import[]>> }) => {
     const navigate = useNavigate();
-            
+
     const importer = async () => {
         try {
             const survey_data = await mnemo_import(s => { console.log(s); });
             if (survey_data.length === 0) {
                 throw Error("No data received");
             }
-            const imported = SurveyStorage.addImportData(ImportType.Mnemo, Array.from(survey_data));
+            const comment = `Imported from MNemo ${new Date().toDateString()}`;
+            const imported = SurveyStorage.addImportData(ImportType.Mnemo, comment, Array.from(survey_data));
             setImport(SurveyStorage.getImports());
-            navigate(`/dump/${imported.id}/0`);
+            navigate(`/imported/${imported.id}`);
         }
         catch (e) {
             if (e instanceof Error) {

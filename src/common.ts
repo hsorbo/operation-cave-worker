@@ -6,6 +6,9 @@ export interface Import {
     id: number;
     date: Date;
     type: ImportType;
+    surveryors: string;
+    location: string;
+    comment: string;
     data: Array<number>;
 }
 
@@ -36,19 +39,29 @@ export class SurveyStorage {
         return this.read().imports;
     }
 
+    public static updateImport(imp: Import): void {
+        const all = this.read();
+        all.imports = all.imports.filter(x => x.id !== imp.id);
+        all.imports.push(imp);
+        this.write(all);
+    }
+
     public static addImport(imp: Import): void {
         const storage = this.read();
         storage.imports.push(imp);
         this.write(storage);
     }
 
-    public static addImportData(type: ImportType, data: Array<number>): Import {
+    public static addImportData(type: ImportType, comment: string, data: Array<number>): Import {
         const storage = this.read();
         const newImport: Import = {
             id: storage.imports.map(x => x.id).reduce((a, b) => Math.max(a, b), 0) + 1,
             date: new Date(),
             type,
             data,
+            surveryors: "Unknown",
+            location: "Unknown",
+            comment,
         }
         storage.imports.push(newImport);
         this.write(storage);

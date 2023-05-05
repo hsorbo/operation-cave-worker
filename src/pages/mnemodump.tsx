@@ -107,7 +107,7 @@ export const MnemoDump = ({imports} : {imports : Import[]}) => {
         const fileContent = dmpFromByteArray(Uint8Array.from(imp.data));
         var bb = new Blob([fileContent], { type: 'text/plain' });
         var a = document.createElement('a');
-        a.download = 'export.dmp';
+        a.download = `${imp?.date} ${imp?.location} ${imp?.surveryors}.dmp`;
         a.href = window.URL.createObjectURL(bb);
         a.click();
     }
@@ -128,13 +128,12 @@ export const MnemoDump = ({imports} : {imports : Import[]}) => {
             banan.forEach((comment, station) => {
                 if (comment === "") return;
                 txt += `Station #${station + 1}: ${comment}\n`;
-
             });
             txt += '\n';
         });
         var bb = new Blob([txt], { type: 'text/plain' });
         var a = document.createElement('a');
-        a.download = 'survery.txt';
+        a.download = `${imp?.date} ${imp?.location} ${imp?.surveryors}.txt`;
         a.href = window.URL.createObjectURL(bb);
         a.click();
     }
