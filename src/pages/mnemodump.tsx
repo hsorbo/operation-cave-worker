@@ -112,13 +112,35 @@ export const MnemoDump = ({imports} : {imports : Import[]}) => {
         a.click();
     }
 
+   
     const imp = imports.find(i => i.id === Number(id));
     if (imp === undefined) {
         return (<h1>Dump {id} not found</h1>)
     }
 
+    const surveyList = surveyListFromByteArray(Uint8Array.from(imp.data));
+      
+    function downloadComments(id: string | undefined) {
+        let txt = '';
+        surveyList.forEach((x, idx) => {
+            txt += `${x.name}${idx}\n`;
+            const banan = SurveyStorage.getComments(Number(id), idx);
+            banan.forEach((comment, station) => {
+                if (comment === "") return;
+                txt += `Station #${station + 1}: ${comment}\n`;
+
+            });
+            txt += '\n';
+        });
+        var bb = new Blob([txt], { type: 'text/plain' });
+        var a = document.createElement('a');
+        a.download = 'survery.txt';
+        a.href = window.URL.createObjectURL(bb);
+        a.click();
+    }
+
+
     try {
-        const surveyList = surveyListFromByteArray(Uint8Array.from(imp.data));
         const s = surveyList[surveyNumberInt];
 
         function boom() {
@@ -140,6 +162,7 @@ export const MnemoDump = ({imports} : {imports : Import[]}) => {
                 <h1>Import #{id}</h1>
                 <p>Imported {imp.date.toString()}</p>
                 <button className="btn btn-primary btn-block btn-sm justify-content-center" onClick={() => downloadDmp(id)}>Download as dmp</button>
+                <button className="btn btn-primary btn-block btn-sm justify-content-center" onClick={() => downloadComments(id)}>Download comments</button>
                 {surveyList.length < 1 && <h2>No surveys found</h2>}
                 <nav className="nav nav-pills justify-content-center">
                     {surveyList.map((survey, i) => (
